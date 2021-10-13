@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace leave_management.Data
+namespace leave_management.Models
 {
-    public class LeaveAllocation
+    public class LeaveAllocationVM
     {
         public int Id { get; set; }
-        
+
         public int NumberOfdays { get; set; }
 
         public DateTime DateCreated { get; set; }
 
-        [ForeignKey("EmployeeId")]
-        public Employee Employee { get; set; }
+        public EmployeeVM Employee { get; set; }
 
         public string EmployeeId { get; set; }
 
-        [ForeignKey("LeaveTypeId")]
-        public LeaveType LeaveType { get; set; }
+        public DetailsLeaveTypeVM LeaveType { get; set; }
         public int LeaveTypeId { get; set; }
-
     }
 }

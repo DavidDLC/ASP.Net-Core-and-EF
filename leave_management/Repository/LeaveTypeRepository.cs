@@ -36,7 +36,7 @@ namespace leave_management.Repository
         public LeaveType FindById(int id)
         {
             var leaveType = _db.LeaveTypes.SingleOrDefault(q => q.Id == id);
-            return leaveType
+            return leaveType;
         }
 
         public ICollection<LeaveType> GetEmployeesByLeaveType(int id)
