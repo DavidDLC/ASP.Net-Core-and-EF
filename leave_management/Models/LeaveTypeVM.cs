@@ -13,23 +13,11 @@ namespace leave_management.Models
         [Required]
         public string Name { get; set; }
 
-        public DateTime DateCreated { get; set; }
+        [Display(Name = "Date Created")]
+
+        public DateTime? DateCreated { get; set; }
     }
 
-    public class DetailsLeaveTypeVM
-    {
-        public int Id { get; set; }
-        [Required]
-        public string Name { get; set; }
 
-        [Display(Name ="Date Created")]
-        public DateTime DateCreated { get; set; }
-    }
 
-    public class CreateLeaveTypeVM
-    {
-        [Required]
-        public string Name { get; set; }
-
-    }
 }

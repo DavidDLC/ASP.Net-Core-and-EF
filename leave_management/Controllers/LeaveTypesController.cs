@@ -26,7 +26,7 @@ namespace leave_management.Controllers
         public ActionResult Index()
         {
             var leaveTypes = _repo.FindAll().ToList();
-            var model = _mapper.Map<List<LeaveType>, List<DetailsLeaveTypeVM>>(leaveTypes);
+            var model = _mapper.Map<List<LeaveType>, List<LeaveTypeVM>>(leaveTypes);
 
             return View(model);
         }
@@ -34,7 +34,15 @@ namespace leave_management.Controllers
         // GET: LeaveTypes/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            if(!_repo.IsExists(id))
+            {
+                return NotFound();
+            }
+
+            var leaveType = _repo.FindById(id);
+            var model = _mapper.Map<LeaveTypeVM>(leaveType);
+
+            return View(model);
         }
 
         // GET: LeaveTypes/Create
@@ -46,57 +54,118 @@ namespace leave_management.Controllers
         // POST: LeaveTypes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(LeaveTypeVM model)
         {
             try
             {
+                if(!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var leaveType = _mapper.Map<LeaveType>(model);
+                leaveType.DateCreated = DateTime.Now;
+
+                var isSuccess = _repo.Create(leaveType);
+                
+                if(!isSuccess)
+                {
+                    ModelState.AddModelError("", "Something wen wrong");
+                    return View(model);
+                }
+
                 return RedirectToAction(nameof(Index));
+
             }
             catch
             {
-                return View();
+                ModelState.AddModelError("", "Something wen wrong");
+                return View(model);
             }
         }
 
         // GET: LeaveTypes/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            if(!_repo.IsExists(id))
+            {
+                return NotFound();
+            }
+
+            var leaveType = _repo.FindById(id);
+            var model = _mapper.Map<LeaveTypeVM>(leaveType);
+            return View(model);
         }
 
         // POST: LeaveTypes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(LeaveTypeVM model)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+                var leaveType = _mapper.Map<LeaveType>(model);
+
+                var isSuccess = _repo.Update(leaveType);
+                if(!isSuccess)
+                {
+                    ModelState.AddModelError("", "Something was wrong in edit ");
+                    return View(model);
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                ModelState.AddModelError("", "Something was wrong in edit ");
+                return View(model);
             }
         }
 
         // GET: LeaveTypes/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var leaveType = _repo.FindById(id);
+
+            if (leaveType == null)
+            {
+                return NotFound();
+            }
+            var isSuccess = _repo.Delete(leaveType);
+            if (!isSuccess)
+            {
+                return BadRequest();
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: LeaveTypes/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, LeaveTypeVM model)
         {
             try
             {
+                var leaveType = _repo.FindById(id);
+                if(leaveType == null)
+                {
+                    return NotFound();
+                }
+                var isSuccess = _repo.Delete(leaveType);
+                if (!isSuccess)
+                {
+                    ModelState.AddModelError("", "Something was wrong in Delete action ");
+                    return View(model);
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                ModelState.AddModelError("", "Something was wrong in Delete Action ");
+                return View(model);
             }
         }
     }
