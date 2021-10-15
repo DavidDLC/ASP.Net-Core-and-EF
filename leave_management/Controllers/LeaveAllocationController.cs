@@ -19,7 +19,7 @@ namespace leave_management.Controllers
         private readonly IMapper _mapper;
         private readonly UserManager<Employee> _userManager;
 
-        public LeaveAllocationController(  
+        public LeaveAllocationController(
             ILeaveAllocationRepository leaveAllocationRepo,
             ILeaveTypeRepository leaveTypeRepo,
             IMapper mapper,
@@ -28,7 +28,7 @@ namespace leave_management.Controllers
             _leaveAllocationRepo = leaveAllocationRepo;
             _leaveTypeRepo = leaveTypeRepo;
             _mapper = mapper;
-            _userManager =userManager;
+            _userManager = userManager;
         }
         // GET: LeaveAllocationController
         public ActionResult Index()
@@ -57,7 +57,7 @@ namespace leave_management.Controllers
 
                 var allocation = new LeaveAllocationVM
                 {
-                    
+
                     DateCreated = DateTime.Now,
                     EmployeeId = emp.Id,
                     LeaveTypeId = id,
@@ -81,9 +81,18 @@ namespace leave_management.Controllers
         }
 
         // GET: LeaveAllocationController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(string id)
         {
-            return View();
+            var employee = _mapper.Map<EmployeeVM>(_userManager.FindByIdAsync(id).Result);
+            var allocations = _mapper.Map<List<LeaveAllocationVM>>(_leaveAllocationRepo.GetLeaveAllocationsByEmployee(id));
+            
+            var model = new ViewAllocationsVM
+            {
+                Employee = employee,
+                leaveAllocations = allocations
+            };
+
+            return View(model);
         }
 
         // GET: LeaveAllocationController/Create

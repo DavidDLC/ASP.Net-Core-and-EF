@@ -31,4 +31,13 @@ namespace leave_management.Models
 
         public List<LeaveTypeVM> LeaveType { get; set; }
     }
+
+    public class ViewAllocationsVM
+    {
+        public EmployeeVM Employee { get; set; }
+
+        public string EmployeeId { get; set; }
+
+        public List<LeaveAllocationVM> leaveAllocations { get; set; }
+    }
 }
