@@ -71,7 +71,7 @@
             @foreach (var item in Model.leaveAllocations)
             {
                 <li class="list-group-item">
-                    <h6> @item.LeaveType.Name <span class="badge badge-secondary">@item.NumberOfdays</span> | <a asp-action="Edit" asp-route-id="@item.Id"><i class="fade fa-pencil"></i> Edit</a></h6>
+                    <h6> @item.LeaveType.Name <span class="badge badge-secondary">@item.NumberOfdays</span>  <a asp-action="Edit" asp-route-id="@item.Id"><i class="fade fa-pencil"></i> Edit</a></h6>
                     
                 </li>
             }

@@ -61,7 +61,57 @@ namespace leave_management.Controllers
         // GET: LeaveRequestController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            var LeaveRequest = _leaveRequestRepo.FindById(id);
+            var model = _mapper.Map<LeaveRequestVM>(LeaveRequest);
+            return View(model);
+        }
+
+        public ActionResult ApprovedRequest(int id)
+        {
+            try
+            {
+                var user = _userManager.GetUserAsync(User).Result;
+                var leaveRequest = _leaveRequestRepo.FindById(id);
+                var employeeId = leaveRequest.RequestingEmployeeId;
+                var leaveTypeId = leaveRequest.LeaveTypeId;
+                int daysRequested = (int)(leaveRequest.EndDate - leaveRequest.StartDate).TotalDays;
+                var allocation = _leaveAllocRepo.GetLeaveAllocationsByEmployeeAndType(employeeId, leaveTypeId);
+                allocation.NumberOfdays = allocation.NumberOfdays - daysRequested;
+
+
+                leaveRequest.Approved = true;
+                leaveRequest.ApprovedById = user.Id;
+                leaveRequest.DateActioned = DateTime.Now;
+                _leaveRequestRepo.Update(leaveRequest);
+                _leaveAllocRepo.Update(allocation);
+
+                return RedirectToAction(nameof(Index));
+
+            }
+            catch (Exception ex)
+            {
+               return RedirectToAction(nameof(Index));
+            }
+
+        }
+        public ActionResult RejectedRequest(int id)
+        {
+            try
+            {
+                var user = _userManager.GetUserAsync(User).Result;
+                var leaveRequest = _leaveRequestRepo.FindById(id);
+                leaveRequest.Approved = false;
+                leaveRequest.ApprovedById = user.Id;
+                leaveRequest.DateActioned = DateTime.Now;
+                _leaveRequestRepo.Update(leaveRequest);
+
+                return RedirectToAction(nameof(Index), "Home");
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Index), "Home");
+            }
         }
 
         // GET: LeaveRequestController/Create
@@ -100,12 +150,12 @@ namespace leave_management.Controllers
 
             try
             {
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return View(model);
                 }
 
-                if(DateTime.Compare(startDate, endDate) >1)
+                if (DateTime.Compare(startDate, endDate) > 1)
                 {
                     ModelState.AddModelError("", "Start date cannot be further in the future than the end date");
                     return View(model);
@@ -117,7 +167,7 @@ namespace leave_management.Controllers
 
                 int daysRequested = (int)(startDate - endDate).TotalDays;
 
-                if(daysRequested > allocation.NumberOfdays)
+                if (daysRequested > allocation.NumberOfdays)
                 {
                     ModelState.AddModelError("", "You don't suffocoemt days for this request");
                     return View(model);
@@ -132,7 +182,7 @@ namespace leave_management.Controllers
                     DateRequested = DateTime.Now,
                     DateActioned = DateTime.Now,
                     LeaveTypeId = model.LeaveTypeId
-                    
+
 
                 };
 
@@ -140,15 +190,15 @@ namespace leave_management.Controllers
 
                 var isSuccess = _leaveRequestRepo.Create(leaveRequest);
 
-                if(!isSuccess)
+                if (!isSuccess)
                 {
                     ModelState.AddModelError("", "something went wrong with submitting your record");
                     return View(model);
                 }
 
-                return RedirectToAction(nameof(Index),"Home");
+                return RedirectToAction(nameof(Index), "Home");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", "something was wrong...");
                 return View();
