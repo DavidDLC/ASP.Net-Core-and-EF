@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,6 +31,21 @@ namespace leave_management.Models
         public int NumberUpdated { get; set; }
 
         public List<LeaveTypeVM> LeaveType { get; set; }
+    }
+
+    public class EditLeaveAllocationVM
+    {
+        public int Id { get; set; }
+
+        public EmployeeVM Employee { get; set; }
+
+        public string EmployeeId { get; set; }
+
+        [Display(Name = "Number Of Days")]
+        [Range(1, 50, ErrorMessage = "Enter Valid Number")]
+        public int NumberOfDays { get; set; }
+
+        public LeaveTypeVM LeaveType { get; set; }
     }
 
     public class ViewAllocationsVM

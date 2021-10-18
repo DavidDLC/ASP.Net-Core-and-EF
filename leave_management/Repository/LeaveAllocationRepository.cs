@@ -42,13 +42,17 @@ namespace leave_management.Repository
         {
             var leaveAllocations = _db.LeaveAllocations
                 .Include(q => q.LeaveType)
+                .Include(q => q.Employee)
                 .ToList();
             return leaveAllocations;
         }
 
         public LeaveAllocation FindById(int id)
         {
-            var leaveAllocation = _db.LeaveAllocations.SingleOrDefault(q => q.Id == id);
+            var leaveAllocation = _db.LeaveAllocations
+                .Include(q => q.LeaveType)
+                .Include(q => q.Employee)
+                .FirstOrDefault(q => q.Id == id);
             return leaveAllocation;
         }
 
