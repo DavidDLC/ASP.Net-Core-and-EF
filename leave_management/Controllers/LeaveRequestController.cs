@@ -90,7 +90,7 @@ namespace leave_management.Controllers
             }
             catch (Exception ex)
             {
-               return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));
             }
 
         }
@@ -196,7 +196,7 @@ namespace leave_management.Controllers
                     return View(model);
                 }
 
-                return RedirectToAction(nameof(Index), "Home");
+                return RedirectToAction("Myleave");
             }
             catch (Exception ex)
             {
@@ -245,6 +245,24 @@ namespace leave_management.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult MyLeave()
+        {
+            var employee = _userManager.GetUserAsync(User).Result;
+            var employeeId = employee.Id;
+            var employeeAllocations = _leaveAllocRepo.GetLeaveAllocationsByEmployee(employeeId);
+            var employeeRequests = _leaveRequestRepo.GetLeaveRequestsByEmployee(employeeId);
+            var employeeAllocationModel = _mapper.Map<List<LeaveAllocationVM>>(employeeAllocations);
+            var employeeRequestsModel = _mapper.Map<List<LeaveRequestVM>>(employeeRequests);
+
+            var model = new EmployeeLeaveRequestViewVM
+            {
+                LeaveAllocations = employeeAllocationModel,
+                LeaveRequests = employeeRequestsModel
+            };
+            return View(model);
+
         }
     }
 }
