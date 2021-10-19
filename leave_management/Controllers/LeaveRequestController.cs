@@ -205,6 +205,14 @@ namespace leave_management.Controllers
             }
         }
 
+        public ActionResult CancelRequest(int id)
+        {
+            var leaveRequest = _leaveRequestRepo.FindById(id);
+            leaveRequest.Cancelled = true;
+            _leaveRequestRepo.Update(leaveRequest);
+            return RedirectToAction("MyLeave");
+        }
+
         // GET: LeaveRequestController/Edit/5
         public ActionResult Edit(int id)
         {
